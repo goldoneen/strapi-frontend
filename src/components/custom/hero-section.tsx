@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { StrapiImage } from "@/components/custom/strapi-image";
+import { getUserMeLoader } from "@/app/data/services/get-user-me-loader";
 
 interface Image {
   id: number;
@@ -24,9 +25,13 @@ interface HeroSectionProps {
   link: Link;
 }
 
-export function HeroSection({ data }: { readonly data: HeroSectionProps  }) {
+export async function HeroSection({ data }: { readonly data: HeroSectionProps  }) {
   // console.dir(data, {depth: null})
-  const { image } = data
+  const { image, heading, subHeading, link } = data
+
+  const user = await getUserMeLoader()
+  const userLoggedIn = user?.ok
+
   return (
     <header className="relative h-[600px] overflow-hidden">
       <StrapiImage
@@ -38,16 +43,16 @@ export function HeroSection({ data }: { readonly data: HeroSectionProps  }) {
       />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white bg-black opacity-50">
         <h1 className="text-4xl font-bold md:text-5xl lg:text-6xl">
-          Summarize Your Videos
+          {heading}
         </h1>
         <p className="mt-4 text-lg md:text-xl lg:text-2xl">
-          Save time and get the key points from your videos
+          {subHeading}
         </p>
         <Link
           className="mt-8 inline-flex items-center justify-center px-6 py-3 text-base font-medium text-black bg-white rounded-md shadow hover:bg-gray-100"
           href="/login"
         >
-          Login
+          {userLoggedIn ? "Dashboard" : link.text}
         </Link>
       </div>
     </header>
