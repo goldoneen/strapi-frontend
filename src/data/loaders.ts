@@ -1,25 +1,27 @@
 import qs from "qs"
 import { getStrapiURL } from "@/lib/utils"
+import { getAuthToken } from "@/app/data/services/get-token";
 
 const baseUrl = getStrapiURL()
 
 async function fetchData(url: string) {
-  const authToken = null // we will implement this later getAuthToken() later
+  const authToken = await getAuthToken();
+
   const headers = {
     method: "GET",
     headers: {
-      "Content-Type": "applicatioin/json",
-      Authorization: `Bearer ${authToken}`
-    }
-  }
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
 
   try {
-    const response = await fetch(url, authToken ? headers : {})
-    const data = await response.json()
-    return data
+    const response = await fetch(url, authToken ? headers : {});
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.log("Error fetching data: ", error)
-    throw error    // or return null
+    console.error("Error fetching data:", error);
+    throw error; // or return null;
   }
 }
 
@@ -80,5 +82,10 @@ export async function getGlobalPageMetadata() {
     fields: ["title", "description"],
   })
 
+  return await fetchData(url.href);
+}
+
+export async function getSummaries() {
+  const url = new URL("/api/summaries", baseUrl);
   return await fetchData(url.href);
 }

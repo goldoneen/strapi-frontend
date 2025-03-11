@@ -4,6 +4,7 @@ import "./globals.css";
 import { getGlobalData, getGlobalPageMetadata  } from "@/data/loaders";
 import { Header } from "@/components/custom/header";
 import { Footer } from "@/components/custom/footer";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,13 +32,13 @@ export default async function RootLayout({
 }>) {
 
   const globalData = await getGlobalData()
-  // console.log('-------------- globalData ----------------\n');
-  // console.dir(globalData, { depth: null })
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster position="bottom-center" />
         <Header data={globalData.data.header} />
         {children}
         <Footer data={globalData.data.footer} />
