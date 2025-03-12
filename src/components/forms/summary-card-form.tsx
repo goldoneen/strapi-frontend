@@ -1,5 +1,8 @@
-/// import { updateSummaryAction, deleteSummaryAction } from "@/data/actions/summary-actions";
+"use client"
+
+import { updateSummaryAction, deleteSummaryAction } from "@/app/data/actions/summary-actions";
 import { cn } from "@/lib/utils";
+import { useActionState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +19,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { SubmitButton } from "@/components/custom/submit-button";
 import ReactMarkdown from "react-markdown";
-// import { DeleteButton } from "@/components/custom/delete-button";
+import { StrapiErrors } from "../custom/strapi-errors";
+import { DeleteButton } from "@/components/custom/delete-button";
+
+const INTIAL_STATE = {
+  strapiErrors: null,
+  data: null,
+  message: null
+}
 
 export function SummaryCardForm({
   item,
@@ -25,7 +35,11 @@ export function SummaryCardForm({
   readonly item: any;
   readonly className?: string;
 }) {
-  // const deleteSummaryById = deleteSummaryAction.bind(null, item.documentId);
+  const deleteSummaryById = deleteSummaryAction.bind(null, item.documentId);
+
+  const [deleteState, deleteAction] = useActionState(deleteSummaryById, INTIAL_STATE)
+
+  const [updateState, updateAction] = useActionState(updateSummaryAction, INTIAL_STATE)
 
   return (
     <Card className={cn("mb-8 relative h-auto", className)}>
@@ -34,7 +48,7 @@ export function SummaryCardForm({
       </CardHeader>
       <CardContent>
         <div>
-          <form>
+          <form action={updateAction}>
             <Input
               id="title"
               name="title"
@@ -111,12 +125,14 @@ export function SummaryCardForm({
               loadingText="Updating Summary"
             />
           </form>
-          <form>
-            {/* <DeleteButton className="absolute right-4 top-4 bg-red-700 hover:bg-red-600" /> */}
+          <form action={deleteAction}>
+            <DeleteButton className="absolute right-4 top-4 bg-red-700 hover:bg-red-600" />
           </form>
         </div>
       </CardContent>
-      <CardFooter></CardFooter>
+      <CardFooter>
+        <StrapiErrors error={deleteState?.strapiErrors || updateState?.strapiErrors} />
+      </CardFooter>
     </Card>
   );
 }
